@@ -1,7 +1,7 @@
 {
-  "name": "tetu_strategies_matic",
+  "name": "storychain-contracts",
   "version": "1.0.0",
-  "description": "Tetu strategies on Polygon",
+  "description": "StoryChain contracts",
   "main": "hardhat.config.js",
   "directories": {
     "test": "test"
@@ -23,14 +23,12 @@
     "solidity",
     "ethereum",
     "polygon",
-    "bsc",
     "smart",
-    "contracts",
-    "tetu"
+    "contracts"
   ],
-  "author": "TETU team <admin@tetu.io>",
+  "author": "4bita <user@example.com>",
   "license": "ISC",
-  "homepage": "https://tetu.io/",
+  "homepage": "https://github.com/4bita/storychain-contracts",
   "dependencies": {
     "@balancer-labs/v2-pool-weighted": "^2.0.1",
     "@nomiclabs/hardhat-ethers": "^2.0.4",
