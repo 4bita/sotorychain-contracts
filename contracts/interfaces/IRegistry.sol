@@ -12,6 +12,8 @@ interface IRegistry {
 
   function getStory(StoryItem memory head) external view returns (StoryItem[] memory);
 
+  function getStoryByHash(bytes32 _hash) external view returns (StoryItem[] memory);
+
   function appendStoryItemCandidate(
     StoryItem memory head,
     uint256 index,
