@@ -20,9 +20,9 @@ interface IRegistry {
     StoryItem memory candidate
   ) external;
 
-  function voteStoryItemCandidate(StoryItem memory head, StoryItem memory candidate) external;
+  function voteStoryItemCandidate(StoryItem memory head, uint256 index, StoryItem memory candidate) external;
 
-  function getStoryItemCandidateVotes(StoryItem memory candidate) external view returns (uint256 votes);
+  function getStoryItemCandidateVotes(StoryItem memory head, uint256 index, StoryItem memory candidate) external view returns (uint256);
 
   function listStoryItemCandidates(StoryItem memory head, uint256 index) external view returns (StoryItem[] memory);
 

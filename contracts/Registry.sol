@@ -14,6 +14,7 @@ contract Registry is IRegistry {
   mapping(bytes32 => uint256[]) internal pubIdRegistry;
   mapping(bytes32 => mapping(uint256 => uint256[])) internal candidatesProfileIds;
   mapping(bytes32 => mapping(uint256 => uint256[])) internal candidatesPubIds;
+  mapping(bytes32 => mapping(uint256 => mapping(bytes32 => uint256))) votes;
 
   event storyRegistered(uint256 indexed profileId, uint256 pubId, bytes32 indexed _hash);
   event candidateRegistered(uint256 indexed headProfileId, uint256 headPubId, uint256 index, bytes32 indexed headHash, uint256 profileId, uint256 pubId);
@@ -42,7 +43,7 @@ contract Registry is IRegistry {
     emit storyRegistered(head.profileId, head.pubId, _hash);
   }
 
-  function getStory(StoryItem memory head) external view override returns (StoryItem[] memory) {
+  function getStory(StoryItem memory head) public view override returns (StoryItem[] memory) {
     bytes32 _hash = keccak256(abi.encodePacked(head.profileId, head.pubId));
     uint256[] memory profileIds = profileIdRegistry[_hash];
     uint256[] memory pubIds = pubIdRegistry[_hash];
@@ -76,7 +77,7 @@ contract Registry is IRegistry {
     emit candidateRegistered(head.profileId, head.pubId, index, _hash, candidate.profileId, candidate.pubId);
   }
 
-  function listStoryItemCandidates(StoryItem memory head, uint256 index) external view override returns (StoryItem[] memory) {
+  function listStoryItemCandidates(StoryItem memory head, uint256 index) public view override returns (StoryItem[] memory) {
     bytes32 _hash = keccak256(abi.encodePacked(head.profileId, head.pubId));
     uint256[] memory profileIds = candidatesProfileIds[_hash][index];
     uint256[] memory pubIds = candidatesPubIds[_hash][index];
@@ -90,14 +91,38 @@ contract Registry is IRegistry {
     return candidates;
   }
 
-  function voteStoryItemCandidate(StoryItem memory head, StoryItem memory candidate) external override {}
+  function voteStoryItemCandidate(StoryItem memory head, uint256 index, StoryItem memory candidate) external override {
+    bytes32 _headHash = keccak256(abi.encodePacked(head.profileId, head.pubId));
+    bytes32 _candidateHash = keccak256(abi.encodePacked(candidate.profileId, candidate.pubId));
+    votes[_headHash][index][_candidateHash] += 1;
 
-  function getStoryItemCandidateVotes(StoryItem memory candidate) external view override returns (uint256 votes) {
-    return 42;
+  }
+
+  function getStoryItemCandidateVotes(StoryItem memory head, uint256 index, StoryItem memory candidate) public view override returns (uint256) {
+    bytes32 _headHash = keccak256(abi.encodePacked(head.profileId, head.pubId));
+    bytes32 _candidateHash = keccak256(abi.encodePacked(candidate.profileId, candidate.pubId));
+    return votes[_headHash][index][_candidateHash];
   }
 
 
-  function commitStory(StoryItem memory head) external override {}
+  function commitStory(StoryItem memory head) external override {
+    StoryItem[] memory story = getStory(head);
+    StoryItem[] memory candidates = listStoryItemCandidates(head, story.length - 1);
+    if (candidates.length > 0) {
+      uint256 firstVoteCount = getStoryItemCandidateVotes(head, story.length, candidates[0]);
+      uint256 maxIndex = 0;
+      uint256 maxVotes = firstVoteCount;
+      for (uint256 i = 1; i < candidates.length; i++) {
+        uint256 voteCount = getStoryItemCandidateVotes(head, story.length, candidates[i]);
+        if (voteCount > maxVotes) {
+          maxIndex = i;
+        }
+      }
+      bytes32 _hash = keccak256(abi.encodePacked(head.profileId, head.pubId));
+      profileIdRegistry[_hash].push(candidates[maxIndex].profileId);
+      pubIdRegistry[_hash].push(candidates[maxIndex].pubId);
+    }
+  }
 
   function getStoryVotingDeadline(StoryItem memory head) external view override returns (uint256) {
     return 42;
