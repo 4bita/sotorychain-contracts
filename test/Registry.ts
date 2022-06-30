@@ -2,7 +2,6 @@ import { BigNumber } from "ethers"
 import chai from "chai"
 import chaiAsPromised from "chai-as-promised"
 import { solidity } from "ethereum-waffle"
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers"
 import { ethers } from "hardhat"
 import { Registry } from "../typechain/Registry"
 
@@ -11,12 +10,9 @@ chai.use(chaiAsPromised)
 chai.use(solidity)
 
 describe("Registry tests", function () {
-  let deployer: SignerWithAddress
   let registry: Registry
 
   beforeEach(async function () {
-    ;[deployer] = await ethers.getSigners()
-    console.log(`deployer: ${deployer.address}`)
     const RegistryFact = await ethers.getContractFactory("Registry")
     registry = await RegistryFact.deploy(
       "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
@@ -88,69 +84,69 @@ describe("Registry tests", function () {
   })
 
   it("Add votes for candidate", async function () {
-      const head = {
-        profileId: BigNumber.from("1"),
-        pubId: BigNumber.from("2"),
-      }
+    const head = {
+      profileId: BigNumber.from("1"),
+      pubId: BigNumber.from("2"),
+    }
 
-      const item1 = {
-        profileId: BigNumber.from("1"),
-        pubId: BigNumber.from("3"),
-      }
+    const item1 = {
+      profileId: BigNumber.from("1"),
+      pubId: BigNumber.from("3"),
+    }
 
-      const item2 = {
-        profileId: BigNumber.from("1"),
-        pubId: BigNumber.from("4"),
-      }
+    const item2 = {
+      profileId: BigNumber.from("1"),
+      pubId: BigNumber.from("4"),
+    }
 
-      await registry.registerStory(head)
-      await registry.appendStoryItemCandidate(head, 0, item1)
-      await registry.appendStoryItemCandidate(head, 0, item2)
+    await registry.registerStory(head)
+    await registry.appendStoryItemCandidate(head, 0, item1)
+    await registry.appendStoryItemCandidate(head, 0, item2)
 
-      await registry.voteStoryItemCandidate(head, 0, item1)
-      await registry.voteStoryItemCandidate(head, 0, item1)
+    await registry.voteStoryItemCandidate(head, 0, item1)
+    await registry.voteStoryItemCandidate(head, 0, item1)
 
-      await registry.voteStoryItemCandidate(head, 0, item2)
+    await registry.voteStoryItemCandidate(head, 0, item2)
 
-      expect(
-        await registry.getStoryItemCandidateVotes(head, 0, item1)
-      ).is.equal(2)
+    expect(await registry.getStoryItemCandidateVotes(head, 0, item1)).is.equal(
+      2
+    )
 
-      expect(
-        await registry.getStoryItemCandidateVotes(head, 0, item2)
-      ).is.equal(1)
-    })
+    expect(await registry.getStoryItemCandidateVotes(head, 0, item2)).is.equal(
+      1
+    )
+  })
 
-    it("Commit story", async function () {
-      const head = {
-        profileId: BigNumber.from("1"),
-        pubId: BigNumber.from("2"),
-      }
+  it("Commit story", async function () {
+    const head = {
+      profileId: BigNumber.from("1"),
+      pubId: BigNumber.from("2"),
+    }
 
-      const item1 = {
-        profileId: BigNumber.from("1"),
-        pubId: BigNumber.from("3"),
-      }
+    const item1 = {
+      profileId: BigNumber.from("1"),
+      pubId: BigNumber.from("3"),
+    }
 
-      const item2 = {
-        profileId: BigNumber.from("1"),
-        pubId: BigNumber.from("4"),
-      }
+    const item2 = {
+      profileId: BigNumber.from("1"),
+      pubId: BigNumber.from("4"),
+    }
 
-      await registry.registerStory(head)
+    await registry.registerStory(head)
 
-      await registry.appendStoryItemCandidate(head, 0, item1)
-      await registry.appendStoryItemCandidate(head, 0, item2)
+    await registry.appendStoryItemCandidate(head, 0, item1)
+    await registry.appendStoryItemCandidate(head, 0, item2)
 
-      await registry.voteStoryItemCandidate(head, 0, item1)
-      await registry.voteStoryItemCandidate(head, 0, item1)
+    await registry.voteStoryItemCandidate(head, 0, item1)
+    await registry.voteStoryItemCandidate(head, 0, item1)
 
-      await registry.voteStoryItemCandidate(head, 0, item2)
+    await registry.voteStoryItemCandidate(head, 0, item2)
 
-      await registry.commitStory(head)
-      const story = await registry.getStory(head)
-      expect(story.length).is.equal(2)
-      expect(story[1][0]).is.equal(1)
-      expect(story[1][1]).is.equal(3)
-    })
+    await registry.commitStory(head)
+    const story = await registry.getStory(head)
+    expect(story.length).is.equal(2)
+    expect(story[1][0]).is.equal(1)
+    expect(story[1][1]).is.equal(3)
+  })
 })
