@@ -9,11 +9,13 @@ contract Registry is IRegistry {
   uint256 public storyRegisterFee;
   uint256 public storyAppendFee;
   uint256 public votingDuration;
-  mapping (bytes32 => uint256[]) internal profileIdRegistry;
-  mapping (bytes32 => uint256[]) internal pubIdRegistry;
-
+  mapping(bytes32 => uint256[]) internal profileIdRegistry;
+  mapping(bytes32 => uint256[]) internal pubIdRegistry;
+  mapping(bytes32 => mapping(uint256 => uint256[])) internal candidatesProfileIds;
+  mapping(bytes32 => mapping(uint256 => uint256[])) internal candidatesPubIds;
 
   event storyRegistered(uint256 indexed profileId, uint256 pubId, bytes32 indexed _hash);
+  
 
   constructor(
     address _protocolFeeUnderlying,
@@ -54,7 +56,16 @@ contract Registry is IRegistry {
     StoryItem memory head,
     StoryItem memory tail,
     StoryItem memory candidate
-  ) external override {}
+  ) external override {
+    bytes32 _hash = keccak256(abi.encodePacked(head.profileId, head.pubId));
+    uint256[] memory newProfileIdHead = new uint256[](1);
+    uint256[] memory newPubIdHead = new uint256[](1);
+    newProfileIdHead[0] = head.profileId;
+    newPubIdHead[0] = head.pubId;
+    profileIdRegistry[_hash] = newProfileIdHead;
+    pubIdRegistry[_hash] = newPubIdHead;
+    emit storyRegistered(head.profileId, head.pubId, _hash);
+  }
 
   function voteStoryItemCandidate(StoryItem memory head, StoryItem memory candidate) external override {}
 
