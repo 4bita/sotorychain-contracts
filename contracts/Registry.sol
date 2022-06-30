@@ -9,6 +9,11 @@ contract Registry is IRegistry {
   uint256 public storyRegisterFee;
   uint256 public storyAppendFee;
   uint256 public votingDuration;
+  mapping (bytes32 => uint256[]) internal profileIdRegistry;
+  mapping (bytes32 => uint256[]) internal pubIdRegistry;
+
+
+  event storyRegistered(uint256 indexed profileId, uint256 pubId, bytes32 indexed _hash);
 
   constructor(
     address _protocolFeeUnderlying,
@@ -22,10 +27,26 @@ contract Registry is IRegistry {
     votingDuration = _votingDuration;
   }
 
-  function registerStory(StoryItem memory head) external override {}
+  function registerStory(StoryItem memory head) external override {
+    bytes32 _hash = keccak256(abi.encodePacked(head.profileId, head.pubId));
+    uint256[] memory newProfileIdHead = new uint256[](1);
+    uint256[] memory newPubIdHead = new uint256[](1);
+    newProfileIdHead[0] = head.profileId;
+    newPubIdHead[0] = head.pubId;
+    profileIdRegistry[_hash] = newProfileIdHead;
+    pubIdRegistry[_hash] = newPubIdHead;
+    emit storyRegistered(head.profileId, head.pubId, _hash);
+  }
 
   function getStory(StoryItem memory head) external view override returns (StoryItem[] memory) {
-    StoryItem[] memory stories = new StoryItem[](0);
+    bytes32 _hash = keccak256(abi.encodePacked(head.profileId, head.pubId));
+    uint256[] memory profileIds = profileIdRegistry[_hash];
+    uint256[] memory pubIds = pubIdRegistry[_hash];
+    StoryItem[] memory stories = new StoryItem[](profileIds.length);
+    for (uint256 i = 0; i < profileIds.length; i++) {
+      stories[i].profileId = profileIds[i];
+      stories[i].pubId = pubIds[i];
+    }
     return stories;
   }
 

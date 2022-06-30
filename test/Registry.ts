@@ -33,7 +33,20 @@ describe("Registry tests", function () {
           profileId: BigNumber.from("0"),
           pubId: BigNumber.from("0"),
         })
-      ).is.not.empty
+      ).emit(registry, "storyRegistered")
+    })
+    it("Get Story", async function () {
+      await registry.registerStory({
+        profileId: BigNumber.from("1"),
+        pubId: BigNumber.from("2"),
+      })
+      const story = await registry.getStory({
+        profileId: BigNumber.from("1"),
+        pubId: BigNumber.from("2")
+      })
+      expect(story[0][0]).is.equal(BigNumber.from("1"))
+      expect(story[0][1]).is.equal(BigNumber.from("2"))
+
     })
   })
 })
