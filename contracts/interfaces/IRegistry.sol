@@ -14,7 +14,7 @@ interface IRegistry {
 
   function appendStoryItemCandidate(
     StoryItem memory head,
-    StoryItem memory tail,
+    uint256 index,
     StoryItem memory candidate
   ) external;
 
@@ -22,7 +22,7 @@ interface IRegistry {
 
   function getStoryItemCandidateVotes(StoryItem memory candidate) external view returns (uint256 votes);
 
-  function listStoryItemCandidates(StoryItem memory head) external returns (StoryItem[] memory);
+  function listStoryItemCandidates(StoryItem memory head, uint256 index) external view returns (StoryItem[] memory);
 
   function commitStory(StoryItem memory head) external;
 
