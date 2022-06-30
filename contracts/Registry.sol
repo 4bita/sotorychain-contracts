@@ -13,6 +13,7 @@ contract Registry is IRegistry {
   mapping(bytes32 => uint256[]) internal pubIdRegistry;
   mapping(bytes32 => mapping(uint256 => uint256[])) internal candidatesProfileIds;
   mapping(bytes32 => mapping(uint256 => uint256[])) internal candidatesPubIds;
+  bytes32[] allStories;
 
   event storyRegistered(uint256 indexed profileId, uint256 pubId, bytes32 indexed _hash);
   
@@ -37,6 +38,7 @@ contract Registry is IRegistry {
     newPubIdHead[0] = head.pubId;
     profileIdRegistry[_hash] = newProfileIdHead;
     pubIdRegistry[_hash] = newPubIdHead;
+    allStories.push(_hash);
     emit storyRegistered(head.profileId, head.pubId, _hash);
   }
 
