@@ -9,10 +9,10 @@ const { expect } = chai
 chai.use(chaiAsPromised)
 chai.use(solidity)
 
-describe("Registry tests", function () {
+describe("Registry tests", function() {
   let registry: Registry
 
-  beforeEach(async function () {
+  beforeEach(async function() {
     const RegistryFact = await ethers.getContractFactory("Registry")
     registry = await RegistryFact.deploy(
       "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
@@ -22,7 +22,7 @@ describe("Registry tests", function () {
     )
   })
 
-  it("Register Story", async function () {
+  it("Register Story", async function() {
     expect(
       await registry.registerStory({
         profileId: BigNumber.from("0"),
@@ -31,7 +31,7 @@ describe("Registry tests", function () {
     ).emit(registry, "storyRegistered")
   })
 
-  it("Get Story", async function () {
+  it("Get Story", async function() {
     await registry.registerStory({
       profileId: BigNumber.from("1"),
       pubId: BigNumber.from("2"),
@@ -44,7 +44,7 @@ describe("Registry tests", function () {
     expect(story[0][1]).is.equal(BigNumber.from("2"))
   })
 
-  it("Add candidate", async function () {
+  it("Add candidate", async function() {
     const head = {
       profileId: BigNumber.from("1"),
       pubId: BigNumber.from("2"),
@@ -72,7 +72,7 @@ describe("Registry tests", function () {
     expect(candidates.length).is.equal(2)
   })
 
-  it("Check allStories and getStoryByHash", async function () {
+  it("Check allStories and getStoryByHash", async function() {
     await registry.registerStory({
       profileId: BigNumber.from("1"),
       pubId: BigNumber.from("2"),
@@ -83,7 +83,7 @@ describe("Registry tests", function () {
     expect(story[0][1]).is.equal(BigNumber.from("2"))
   })
 
-  it("Add votes for candidate", async function () {
+  it("Add votes for candidate", async function() {
     const head = {
       profileId: BigNumber.from("1"),
       pubId: BigNumber.from("2"),
@@ -117,7 +117,7 @@ describe("Registry tests", function () {
     )
   })
 
-  it("Commit story", async function () {
+  it("Commit story", async function() {
     const head = {
       profileId: BigNumber.from("1"),
       pubId: BigNumber.from("2"),
@@ -139,14 +139,14 @@ describe("Registry tests", function () {
     await registry.appendStoryItemCandidate(head, 0, item2)
 
     await registry.voteStoryItemCandidate(head, 0, item1)
-    await registry.voteStoryItemCandidate(head, 0, item1)
 
+    await registry.voteStoryItemCandidate(head, 0, item2)
     await registry.voteStoryItemCandidate(head, 0, item2)
 
     await registry.commitStory(head)
     const story = await registry.getStory(head)
     expect(story.length).is.equal(2)
     expect(story[1][0]).is.equal(1)
-    expect(story[1][1]).is.equal(3)
+    expect(story[1][1]).is.equal(4)
   })
 })

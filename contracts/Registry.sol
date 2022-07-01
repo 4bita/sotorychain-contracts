@@ -112,10 +112,12 @@ contract Registry is IRegistry {
       uint256 firstVoteCount = getStoryItemCandidateVotes(head, story.length, candidates[0]);
       uint256 maxIndex = 0;
       uint256 maxVotes = firstVoteCount;
+
       for (uint256 i = 1; i < candidates.length; i++) {
-        uint256 voteCount = getStoryItemCandidateVotes(head, story.length, candidates[i]);
+        uint256 voteCount = getStoryItemCandidateVotes(head, story.length - 1, candidates[i]);
         if (voteCount > maxVotes) {
           maxIndex = i;
+          maxVotes = voteCount;
         }
       }
       bytes32 _hash = keccak256(abi.encodePacked(head.profileId, head.pubId));
