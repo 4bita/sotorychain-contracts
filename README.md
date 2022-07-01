@@ -25,7 +25,7 @@ Lens ProfileCreationProxy: https://polygonscan.com/address/0x1eeC6ecCaA4625da3Fa
 2. Post publications.
 3. Register story head.
 4. Propose story continuation candidates.
-5. Vote for candidaes.
+5. Vote for candidates.
 6. Commit winner!
 7. goto step 4
 
